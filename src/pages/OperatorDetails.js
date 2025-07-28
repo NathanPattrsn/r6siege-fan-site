@@ -6,30 +6,7 @@ function OperatorDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const operator = operatorData.find((operator) => operator.id === parseInt(id));
-
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const handleImageClick = (layout) => {
-    setSelectedImage(layout);
-  };
-
-  const handleClose = () => {
-    setSelectedImage(null);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') handleClose();
-  };
-
-  useEffect(() => {
-    if (selectedImage) {
-      document.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.removeEventListener('keydown', handleKeyDown);
-    }
-
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImage]);
+  const [selectedModelUrl, setSelectedModelUrl] = useState(null);
 
   if (!operator) {
     return (
@@ -63,9 +40,56 @@ function OperatorDetails() {
           <div className="flex-1">
             <h1 className="text-3xl font-bold mb-2">{operator.name}</h1>
             <p className="mb-6">{operator.description}</p>
+            <h2 className="text-2xl font-bold mb-4">Operator Details</h2>
+            <p className="mb-2"><strong>Role:</strong> {operator.role}</p>
+            <p className="mb-2"><strong>Ability:</strong> {operator.ability}</p>
+            <p className="mb-2"><strong>Speed:</strong> {operator.speed}</p>
+            <p className="mb-2"><strong>Armor:</strong> {operator.armor}</p>
           </div>
         </div>
 
+        <div className="w-full">
+          <h3 className="text-xl font-semibold mt-6 mb-2">Weapons</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {operator.weapons.map((weapon, index) => (
+              <div key={index} className="border rounded p-4 bg-gray-800">
+                <img src={weapon.image} alt={weapon.name} className="w-full h-32 object-cover mb-2 rounded" />
+                <h4 className="font-bold text-lg">{weapon.name}</h4>
+                  <button
+                    onClick={() => setSelectedModelUrl(weapon.sketchfabEmbedUrl)}
+                    className="text-blue-400 hover:underline mt-2"
+                  >
+                    View 3D Model
+                  </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+            {selectedModelUrl && (
+            <div className="mt-8 w-full">
+              <h3 className="text-xl font-semibold mb-2">3D Model Viewer</h3>
+              <div className="relative w-full h-[500px] rounded-lg overflow-hidden border border-gray-400">
+                <iframe
+                  title="Sketchfab Model"
+                  width="100%"
+                  height="100%"
+                  src={selectedModelUrl}
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  allowFullScreen
+                  mozallowfullscreen="true"
+                  webkitallowfullscreen="true"
+                ></iframe>
+              </div>
+              <button
+                onClick={() => setSelectedModelUrl(null)}
+                className="mt-4 bg-red-600 px-4 py-2 rounded hover:bg-opacity-80"
+              >
+                Close Viewer
+              </button>
+            </div>
+          )}
       </div>
     </div>
   );
